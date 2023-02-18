@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Text Extraction from Mobile Camera</title>
+    <style>
+        #video {
+            width: 50%;
+            height: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Text Extraction from Mobile Camera</h1>
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <div id="output"></div>
+    
+    <div id="camera">
+        <video id="video" autoplay></video>
+    </div>
+    <script>
+        var video = document.querySelector("#video");
+        var output = document.querySelector("#output");
+
+        function start() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                    console.log("Video stream started");
+                })
+                .catch(function(error) {
+                    console.log("Error starting video stream:", error);
+                });
+
+            setInterval(function() {
+                var canvas = document.createElement("canvas");
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                var dataURL = canvas.toDataURL("image/png");
+
+                fetch("/extract_text", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ image_data: dataURL })
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    output.innerHTML = data.text;
+                })
+                .catch(function(error) {
+                    console.log("Error extracting text:", error);
+                });
+            }, 1000);
+        }
+
+        function stop() {
+            video.pause();
+            video.src = "";
+            console.log("Video stream stopped");
+        }
+    </script>
+</body>
+</html>
