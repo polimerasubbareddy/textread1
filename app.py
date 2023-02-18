@@ -46,6 +46,7 @@ def upload_image():
     cv2.imwrite("image.jpg", image)
     image = cv2.imread("image.jpg")
     image = cv2.flip(image, 1)
+    cv2.imwrite("image.jpg", image)
     #print('image', image)
     #cv2.imshow("image",image)
     # Extract text from the image
