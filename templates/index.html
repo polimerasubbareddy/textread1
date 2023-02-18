@@ -21,6 +21,12 @@
         <video id="video" autoplay></video>
     </div>
     <script>
+        const constraints = {
+              audio: false,
+                video: {
+                        facingMode: { exact: "environment" }
+                      }
+                    };
         var video = document.querySelector("#video");
         var output = document.querySelector("#output");
 
