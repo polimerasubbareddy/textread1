@@ -3,35 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Text Extraction from Mobile Camera</title>
+    <title>Live Text Extraction from Mobile Back Camera</title>
     <style>
         #video {
-            width: 50%;
-            height: 50%;
+            width: 100%;
+            height: auto;
+            transform: scaleX(-1);
         }
     </style>
 </head>
 <body>
-    <h1>Live Text Extraction from Mobile Camera</h1>
+    <h1>Live Text Extraction from Mobile Back Camera</h1>
     <button onclick="start()">Start</button>
     <button onclick="stop()">Stop</button>
-    <div id="output"></div>
-    
     <div id="camera">
         <video id="video" autoplay></video>
     </div>
+    <div id="output"></div>
     <script>
-        const constraints = {
-              audio: false,
-                video: {
-                        facingMode: { exact: "environment" }
-                      }
-                    };
         var video = document.querySelector("#video");
         var output = document.querySelector("#output");
 
         function start() {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } })
                 .then(function(stream) {
                     video.srcObject = stream;
                     video.play();
@@ -45,7 +39,10 @@
                 var canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+                var context = canvas.getContext("2d");
+                context.translate(canvas.width, 0);
+                context.scale(-1, 1);
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 var dataURL = canvas.toDataURL("image/png");
 
                 fetch("/extract_text", {
