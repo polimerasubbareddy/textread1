@@ -48,7 +48,7 @@ def upload_image():
     #print('image', image)
     #cv2.imshow("image",image)
     # Extract text from the image
-    i = cv2.imread("im.jpg")
+    #i = cv2.imread("im.jpg")
     text = extract_text(image)
     print("etracted text:", text)
     # Return the extracted text as JSON
